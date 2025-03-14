@@ -1,0 +1,94 @@
+4b. Ipv6 ACL
+
+------------------------------------------------------------------------------------------------------------------------------
+
+Draw topology and add the ip
+
+Configure IP Address and Set up RIP
+
+R0
+config t
+ipv6 unicast-routing
+int gig 0/0
+ipv6 address 2002::1/64
+ipv6 rip a enable
+no shutdown
+exit
+int gig 0/1
+ipv6 address 2001::1/64
+ipv6 rip a enable
+no shutdown
+exit
+int serial 0/1/0
+ipv6 address 2003::1/64
+ipv6 rip a enable
+no shutdown
+exit
+
+R1
+config t
+ipv6 unicast-routing
+int serial 0/1/0
+ipv6 address 2003::2/64
+ipv6 rip a enable 
+no shutdown
+int serial 0/1/1
+ipv6 address 2004::1/64
+ipv6 rip a enable
+no shutdown
+exit
+
+R2
+config t
+ipv6 unicast-routing 
+int serial 0/1/1
+ipv6 address 2004::2/64
+ipv6 rip a enable
+no shutdown
+exit
+int gig 0/0
+ipv6 address 2005::1/64
+ipv6 rip a enable
+no shutdown
+exit
+
+--------------------------------------------------------------------------------------------------------
+
+Check Connectivity
+
+PC1
+ping 2004::2
+
+Server0
+ping 2002::2
+
+PC1 (Browser)
+http://2005:2
+
+-------------------------------------------------------------------------------------------------------
+
+ACL with conditions on R1
+
+R1
+config t
+ipv6 access-list smile
+deny tcp any host 2005::2 eq www
+dent tcp any host 2005::2 eq 443
+permit ipv6 any any
+exit
+int serial 0/1/0
+ipv6 traffic-filter smile out
+exit
+
+---------------------------------------------------------------------------------------------------------
+
+Check 
+
+PC0 (Browser) 
+http://2005::2
+(no access)
+
+PC0 (Command Prompt)
+ping 2005::2
+
+---------------------------------------------------------------------------------------------------------

@@ -1,0 +1,112 @@
+1. Packet Tracer - Configure Cisco Routers for Syslog, NTP, and SSH Operations
+
+----------------------------------------------------------------------------------------------------------------------------
+
+
+Connect everything then go to PC0 type the command
+ping 192.168.1.2 
+(192.168.1.2) - IP address of Syslog Server
+You'll get destination host unreachable.
+
+Perform OSPF on router:
+R0
+config t
+router ospf 1
+network 192.168.1.0 0.255.255.255 area 1
+network 192.168.2.0 0.255.255.255 area 1
+
+R1
+config t
+router ospf 1
+network 192.168.2.0 0.255.255.255 area 1
+network 192.168.3.0 0.255.255.255 area 1
+
+PC0
+ping 192.168.1.2
+(192.168.1.2) - IP address of Syslog Server
+
+NTP-Server
+ping 192.168.3.2
+(192.168.3.2) - IP address of PC1
+
+MD5 Authentication
+R0
+config t
+int gig 0/1
+ip ospf authentication message-digest
+ip ospf message-digest-key 1 md5 smile
+
+Perform same commands on R1 (MD5 Authentication)
+
+Check MD5 Authentication
+R0# show ip ospf int gig 0/1
+
+-------------------------------------------------------------------------------------------------------------------------
+
+Configure NTP
+
+NTP server -> Services -> NTP -> On
+
+R0
+R0# show clock
+
+R0
+config t
+ntp server 192.168.1.3 
+ntp update-calendar
+(192.168.1.3) - Ip address of NTP server
+
+R0
+R0# show clock
+
+Perform same Commands on R2 (Configure NTP)
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Configure Syslog Server
+
+Syslog Server -> Services -> SYSLOG -> On
+
+R0
+config t
+logging 192.168.1.2
+exit
+(192.168.1.2) - Ip address of Syslog server
+
+Do same commands on R1
+
+To check logging info
+Syslog Server -> Services -> SYSLOG 
+
+------------------------------------------------------------------------------------------------------------------------
+
+Configure SSH to Router
+
+R1
+config t
+ip domain-name ccnasecurity.com
+username SSHadmin privilege 15 secret ciscosshpa55
+line vty 0 4
+login local
+transport input ssh
+crypto key zeroize rsa
+no
+yes
+1024
+
+R1
+config t
+ip ssh time-out 90
+ip ssh authentication-retries 2
+ip ssh version 2
+
+Check working of protocol
+
+PC0
+telnet 192.168.3.1
+(192.168.3.1)- IP address of R1(gig 0/0) - Connection Failes (R1 accepts only SSH request)
+
+PC0
+ssh -l SSHadmin 192.168.3.1
+Password: ciscosshpa55
+

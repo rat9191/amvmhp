@@ -1,0 +1,129 @@
+5. Configuring Zone Based Policy Firewall (ZPF)
+
+-------------------------------------------------------------------------------------------------------
+
+Draw topology and add the ip - add HWIC2T
+
+Static Routing
+
+R0(Left)
+net: 192.168.3.0 hop: 192.168.2.2
+net: 192.168.4.0 hop: 192.168.2.2
+
+R1(Right)
+net: 192.168.1.0 hop: 192.168.3.1
+net: 192.168.2.0 hop: 192.168.3.1
+
+R2(Mid)
+net: 192.168.1.0 hop: 192.168.2.1
+net: 192.168.4.0 hop: 192.168.3.2
+
+-----------------------------------------------------------------------------------------------------
+
+check connectivity
+
+PC0 
+ping 192.168.1.2
+(192.168.1.2)- IP address of Server0
+
+Server0
+ping 192.168.4.2
+(192.168.4.2) - Ip address of PC0
+
+--------------------------------------------------------------------------------------------------------
+
+SSH on Router 2
+
+R2
+config t
+domain name smile.com
+username smile privilege 15 password cisco 
+line vty 0 4
+transport input ssh
+login local
+exit
+crypto key generate rsa 
+1024
+exit
+
+---------------------------------------------------------------------------------------------------------
+
+Verify SSH
+
+PC0
+ssh -l smile 192.168.3.1
+Password: cisco
+(192.168.3.1) - IP of Router2 (serial 0/1/1) 
+
+PC0 (Browser) 
+http://192.168.1.2
+(192.168.1.2) - Ip address of Server
+
+-------------------------------------------------------------------------------------------------------------
+
+Firewall zone
+
+R1
+R1# show version
+config t
+license boot module c1900 technology-package securityk9
+Accept: yes
+exit
+reload
+save: yes
+show version
+config t
+zone security in-zone
+exit
+zone security out-zone
+exit
+access-list 101 permit ip 192.168.4.0 0.0.0.255 any
+class-map type inspect match-all in-map
+match-access group 101
+exit
+policy-map type inspect in-out
+class type inspect in-map
+inspect
+exit
+exit
+zone-pair security in-out-zone source in-zone destination out-zone
+service-policy type inspect in-out
+exit
+int gig 0/0
+zone-member security in-zone
+exit
+int serial 0/1/1
+zone-member security out-zone
+exit
+exit
+copy running-config startup-config
+
+--------------------------------------------------------------------------------------------------------------
+
+Test Firewall Functionality
+
+PC0
+ping 192.168.1.2
+(192.168.1.2) - Server0's IP address
+
+PC0
+ssh -l smile 192.168.3.1
+Password: cisco
+(192.168.3.1) - IP of Router2 (serial 0/1/1) 
+
+---------------------------------------------------------------------------------------------------------
+
+SHOW POLICY MAP 
+
+Router> enable
+Router# show policy-map type inspect zone-pair sessions
+
+------------------------------------------------------------------------------------------------------------
+
+Check 
+
+PC0(Browser)
+http://192.168.1.2
+
+Server0
+ping 192.168.4.2

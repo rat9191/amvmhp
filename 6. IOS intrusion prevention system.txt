@@ -1,0 +1,71 @@
+6. IOS Intrusion Prevention System (IPS) using CLI
+
+do RIP and Ping 
+
+---------------------------------------------------------------------------------
+R1
+
+enable
+show version 
+(spam yes every question)
+router#config t
+license boot module c1900 technology-package security k9
+exit
+reload 
+enable
+show version 
+clock set
+mkdir smile
+config t
+ip ips config location flash: smile
+ip ips name iosips
+ip ips name iosips
+ip ips notify log
+ip ips signature-category
+category all
+retired true
+exit
+category ios-ips basic 
+retired false
+exit
+exit
+interface serial 0/1
+ip ips iosips out
+exit
+ip ips signature_defnition
+signature 2004 0
+status 
+retired false 
+enabled true
+exit
+ engine
+event-action-produce-alert
+event-action-deny-packet-inline
+exit
+exit
+exit
+yes
+exit
+
+------------------------------------------------------------------------------------
+
+verify the IPS configuration 
+
+PC1
+ping 192.168.1.2
+
+Server
+ping 192.168.4.2
+
+--------------------------------------------------------------------------------------
+
+check syslog
+
+enable
+configure terminal
+logging 192.168.1.2
+exit
+ping 192.168.1.2
+
+go to service tab we get reply there
+

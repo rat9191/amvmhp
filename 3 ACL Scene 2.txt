@@ -1,0 +1,80 @@
+3b. Configuring Extended ACLs - Scenario 2
+
+-----------------------------------------------------------------------------------------------------------------
+
+Draw topology and add the ip
+
+Configure Switches (Assign IP and Default Gateway)
+
+SW1
+int vlan 1
+ip address 10.101.117.50 255.255.255.248
+no shutdown
+exit
+ip default-gateway 10.101.117.49
+exit
+
+SW2
+int vlan 1
+ip address 10.101.117.34 255.255.255.240
+no shutdown
+exit
+ip default-gateway 10.101.117.33
+exit
+
+SW3
+int vlan 1
+ip address 10.101.117.2 255.255.255.224
+no shutdown
+exit
+ip default-gateway 10.101.117.1
+exit
+
+------------------------------------------------------------------------------------------------------------------
+
+Display IP address details
+
+R1
+R1# show int brief
+
+do same for SW1, SW2, SW3
+
+------------------------------------------------------------------------------------------------------------------
+
+Configure Telnet on SW3
+
+SW3
+config t
+username admin password teacher
+line vty 0 4 
+login local
+exit
+
+-------------------------------------------------------------------------------------------------------------------
+
+Configure Extended numbered ACL on R1
+
+R1
+config t
+access-list 199 permit tcp 10.101.117.32 0.0.0.15 10.101.117.0 0.0.0.31
+access-list 199 permit icmp any any
+int gig 0/2
+ip access-group 199 out
+exit
+
+-------------------------------------------------------------------------------------------------------------------
+
+Verify ACL
+
+PC1
+ping 10.101.117.35
+telnet 10.101.117.2
+(remote connection failed)
+
+PC2
+ping 10.101.117.51
+telnet 10.101.117.2
+Username: admin
+Password: teacher
+
+

@@ -1,0 +1,54 @@
+3a. Configuring Extended ACLs - Scenario 1 
+
+------------------------------------------------------------------------------------------------------------------
+
+Draw topology and add the ip
+
+RIP Routing
+
+Router -> Config -> RIP
+R0
+192.168.1.0
+192.168.2.0
+Add
+
+R1
+192.168.2.0
+192.168.3.0
+Add
+
+-----------------------------------------------------------------------------------------------------------------
+Check Connectivity 
+
+PC -> Server 
+PC> ping 192.168.1.2
+
+Server -> PC
+Server> ping 192.168.3.2
+
+-------------------------------------------------------------------------------------------------------------------
+
+Configure ACL
+
+R0
+config t
+access-list 100 permit tcp host 192.168.3.2 host 192.168.1.2 eq ftp
+int gig 0/1
+ip access-group 100 out 	
+exit
+
+(192.168.3.2) - IP address of PC0
+(192.168.1.2) - IP address of Server0
+
+--------------------------------------------------------------------------------------------------------------------
+Check working of ACL
+
+PC0 (ftp will work coz given access)
+ftp 192.168.1.2
+Username: cisco
+Password: cisco
+
+PC1
+ftp 192.168.1.2
+Error (No access to PC1)
+

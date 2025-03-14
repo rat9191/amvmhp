@@ -1,0 +1,78 @@
+4a - Mitigate attacks 
+
+--------------------------------------------------------------------------------------------------------------
+
+Draw topology and add the ip
+
+DO RIP ROUTING
+
+R0
+192.168.1.0
+192.168.2.0
+
+R1
+192.168.2.0
+192.168.3.0
+
+R2
+192.168.3.0
+192.168.4.0
+
+--------------------------------------------------------------------------------------------------------------
+
+Check connectivity
+
+PC0
+ping 192.168.1.2
+(192.168.1.2) - IP address of Server
+
+Server0
+ping 192.168.4.2
+(192.168.4.2) - IP address of PC0
+
+--------------------------------------------------------------------------------------------------------------
+
+Configure Routers for given IP cases
+
+R0
+config t
+ip domain-name ccnasecurity.com
+username admin privilege 15 password adminpa55
+line vty 0 4
+transport input ssh 
+login local
+exit
+crypto key generate rsa
+1024
+
+Perform same on R1 and R2
+
+----------------------------------------------------------------------------------------------------------------
+
+Configure ACL
+
+R0
+config t
+access-list 10 permit host 192.168.4.2
+line vty 0 4
+access-class 10 in 
+exit
+
+(192.168.4.2) IP address of PC0
+
+Perform same on R1 and R2
+
+----------------------------------------------------------------------------------------------------------------
+
+Verify ACL
+
+PC0
+ssh -l admin 192.168.3.2
+Password: adminpa55
+
+(192.168.3.2)- Ip address of R2 se 0/1/1
+
+Server0
+ssh -l admin 192.168.3.2
+connection refused
+

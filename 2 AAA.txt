@@ -1,0 +1,38 @@
+2. Packet Tracer - Configure AAA Authentication on Cisco Routers
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+Draw topology and add the ip
+
+Activate Services
+
+TACACS server -> Services -> NTP -> On -> client name: alpha -> client ip: 192.168.2.1 Server Type: Tacacs -> Key: abc123 -> Add
+Username: alpha -> password: xyz123 -> Add
+(192.168.2.1) - GigEthernet 0/1 
+
+DO the same for activating service for Radius server just Give Server Type: Radius
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+Configure AAA
+R0
+config t
+aaa new-model
+tacacs-server host 192.168.2.3 key abc123
+radius-server host 192.168.2.2 key abc123
+aaa authentication login smile group tacacs+ group radius local
+line vty 0 4
+login authentication smile
+exit
+(192.168.2.3) - Ip address of TACACS 
+(192.168.2.2) - Ip address of RADIUS
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+Check AAA from PC
+PC0
+telnet 192.168.2.1 
+Username: alpha
+Password: xyz123
+
+do same for second PC

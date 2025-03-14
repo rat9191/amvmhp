@@ -1,0 +1,84 @@
+add hwic 2t
+
+cloud0 -> config tab (serial0)-> port status -> turn on
+router0 -> config tab -> select interface -> gigabit 0/0 -> on port status
+router0 -> config tab -> select interface -> serial0/1/0 -> on port status
+
+---------------------------------------------------------------------------------------------
+
+configure route bridge
+
+click on multilayer switch0 type commands
+
+enable
+show spanning tree
+config t
+spanning-tree vlan 1 root primary
+do show spann
+
+---------------------------------------------------------------------------------------------
+switch1
+
+enable
+show spanning-tree
+config t
+spanning-tree vlan 1 root secondary
+do show spann
+
+------------------------------------------------------------------------------------------
+
+switchA
+
+enable 
+config t
+interface range fastEthernet 0/1-2
+switchport mode access
+spanning-tree portfast
+spanning-tree bpduguard enable
+
+-------------------------------------------------------------------------------------------
+
+swtichB (same)
+
+-----------------------------------------------------------------------------------------
+
+switch1
+
+interface range fastEthernet 0/23-24
+spanning-tree guard root
+
+----------------------------------------------------------------------------------------
+
+
+config port security and disable unused ports
+
+swtich A
+
+switchA(config-if-range)#switchport port-security 
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+switchport port-security violation shutdown
+
+Type same commands for Switch B
+
+------------------------------------------------------------------------------------------
+
+switch A
+
+switchA(config-if-range)#exit
+show port-security interface f0/1
+
+------------------------------------------------------------------------------------------
+
+switch A
+
+enable 
+config terminal
+interface range fastEthernet 0/3-22
+shutdown
+
+------------------------------------------------------------------------------------------
+
+switch
+
+same
